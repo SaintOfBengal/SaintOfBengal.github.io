@@ -2,68 +2,215 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Mars Index Gen 2.0 - Cyberpunk Edition</title>
+  <title>NMB Mirror 2.0 - Cybernetic Nexus</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Full-screen looping video background -->
+  <video autoplay loop muted playsinline class="background-video">
+    <source src="original-eb6ba01c646fff96981ad4ef7bd76279.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Semi-transparent overlay on top of the video for readability -->
+  <div class="video-overlay"></div>
+
+  <!-- Animated scanline effect -->
+  <div class="scanline-overlay"></div>
+
+  <!-- Cybernetic mouse effect canvas -->
   <canvas id="cyberMouseCanvas"></canvas>
+
+  <!-- Main content container -->
   <div class="container">
-    <h1>Mars Auto Index Gen 2.0</h1>
+    <!-- Heading with data-text for glitch effect -->
+    <h1 class="glitch" data-text="by Mars">NMB MIRROR <span class="h1-accent">2.0</span></h1>
     <form id="urlForm">
-      <input type="text" id="inputUrl" name="inputUrl" placeholder="Google Drive File Link" onblur="restorePlaceholder()" />
-      <button type="button" id="generateButton" class="button" onclick="generateLinks()">&#9881 Generate</button>
-      <button type="button" class="button clear-button" onclick="clearBoxes()">&#128465 Clear</button>
+      <input type="text" id="inputUrl" name="inputUrl" placeholder="ENTER GOOGLE DRIVE LINK" onblur="restorePlaceholder()" />
+      <div class="button-group">
+        <button type="button" id="generateButton" class="button generate-button" onclick="generateLinks()">GENERATE LINK</button>
+        <button type="button" class="button clear-button" onclick="clearBoxes()">CLEAR</button>
+      </div>
     </form>
 
-    <div class="result-box" id="sourceLinkBox">
-      <h3>&#128161 Google Drive Link</h3>
-      <div class="source-link-content">
-        <p id="sourceLink">#</p>
+    <div class="result-section">
+      <!-- NEW: Clickable loqen.me link -->
+      <div class="result-box static-link-box">
+        <h3 class="box-title">VISIT OUR TELEGRAM GROUP || by NoMoreBins </h3>
+        <div class="source-link-content">
+          <a href="https://t.me/TheMirrorGroup" target="_blank" class="static-link">@TheMirrorGroup</a>
+        </div>
+      </div>
+      <!-- END NEW -->
+
+      <div class="result-box" id="resultBox">
+        <h3 class="box-title">PERMANENT INDEX LINK</h3>
+        <div class="button-group">
+          <button id="copyButton" class="button copy-button" onclick="copyPermanentLink()">COPY</button>
+          <a id="visitButton" href="#" target="_blank" class="button download-button">DOWNLOAD</a>
+        </div>
+      </div>
+
+      <div class="result-box" id="temporaryResultBox">
+        <h3 class="box-title">TEMPORARY LINK</h3>
+        <div class="button-group">
+          <button id="temporaryCopyButton" class="button copy-button" onclick="copyTemporaryLink()">COPY</button>
+          <a id="temporaryVisitButton" href="#" target="_blank" class="button download-button">DOWNLOAD</a>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="result-box" id="resultBox">
-      <h3>&#128194 Permanent Index Link</h3>
-      <button id="copyButton" class="button" onclick="copyPermanentLink()">Copy</button>
-      <a id="visitButton" href="#" target="_blank" class="button">Download</a>
-    </div>
-
-    <div class="result-box" id="temporaryResultBox">
-      <h3>&#9889 Temporary Link</h3>
-      <button id="temporaryCopyButton" class="button" onclick="copyTemporaryLink()">Copy</button>
-      <a id="temporaryVisitButton" href="#" target="_blank" class="button">Download</a>
+  <!-- Custom Pop-up Modal Structure -->
+  <div id="customModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 id="modalTitle" class="box-title"></h3>
+      <p id="modalMessage"></p>
+      <button class="button" onclick="hideModal()">Thanks Mars</button>
     </div>
   </div>
+
+  <!-- Link to the script.js file -->
   <script src="script.js"></script>
   <script>
+    // JavaScript for the cybernetic mouse effect
     const canvas = document.getElementById('cyberMouseCanvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     let mouse = { x: 0, y: 0 };
+    let particles = [];
+    const PARTICLE_COUNT_ON_MOVE = 1; // Optimized: Reduced particles emitted per mouse move
+    const PARTICLE_LIFESPAN = 90; // frames (slightly longer lifespan for smoother fade)
+    const AMBIENT_PARTICLE_COUNT = 20; // Optimized: Reduced ambient particles for performance
+
+    // Particle class for the mouse effect and ambient particles
+    class Particle {
+      constructor(x, y, isAmbient = false) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 2 + 0.5; // Optimized: Smaller random size
+        this.speedX = (Math.random() - 0.5) * 1.5; // Optimized: Slower random speed
+        this.speedY = (Math.random() - 0.5) * 1.5; // Optimized: Slower random speed
+        this.color = `hsl(${Math.random() * 60 + 90}, 100%, 70%)`; // Greenish hue
+        this.alpha = 1;
+        this.history = []; // To store past positions for trail
+        this.isAmbient = isAmbient;
+
+        if (this.isAmbient) {
+          this.speedX = (Math.random() - 0.5) * 0.3; // Even slower ambient speed
+          this.speedY = (Math.random() - 0.5) * 0.3;
+          this.alpha = Math.random() * 0.4 + 0.4; // Random initial alpha for ambient (more subtle)
+          this.size = Math.random() * 1.5 + 0.3; // Very small ambient particles
+        }
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.isAmbient) {
+          // Loop ambient particles around screen
+          if (this.x < 0) this.x = canvas.width;
+          if (this.x > canvas.width) this.x = 0;
+          if (this.y < 0) this.y = canvas.height;
+          if (this.y > canvas.height) this.y = 0;
+          this.alpha = Math.min(1, this.alpha + 0.002); // Gently fade in/out
+        } else {
+          this.alpha -= 1 / PARTICLE_LIFESPAN; // Fade out non-ambient particles
+        }
+
+        this.history.push({ x: this.x, y: this.y });
+        if (this.history.length > 3) { // Optimized: Keep trail length shorter
+          this.history.shift();
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = 3; // Optimized: Less blur for individual particles
+        ctx.fill();
+
+        // Draw trail
+        for (let i = 0; i < this.history.length; i++) {
+          const pos = this.history[i];
+          const trailAlpha = this.alpha * (i / this.history.length) * 0.4; // Optimized: Softer trail
+          ctx.globalAlpha = trailAlpha;
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, this.size * (i / this.history.length) * 0.2, 0, Math.PI * 2); // Optimized: Smaller trail circles
+          ctx.fillStyle = this.color;
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    // Initialize ambient particles
+    for (let i = 0; i < AMBIENT_PARTICLE_COUNT; i++) {
+      particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, true));
+    }
 
     window.addEventListener('mousemove', e => {
       mouse.x = e.x;
       mouse.y = e.y;
+      // Add new particles on mouse move
+      for (let i = 0; i < PARTICLE_COUNT_ON_MOVE; i++) {
+        particles.push(new Particle(mouse.x, mouse.y));
+      }
     });
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 10, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0,255,0,0.4)';
-      ctx.shadowColor = '#0f0';
-      ctx.shadowBlur = 20;
-      ctx.fill();
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas each frame
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+        // Remove faded or out-of-bounds non-ambient particles
+        if (!particles[i].isAmbient && particles[i].alpha <= 0.05) { // Optimized: Remove earlier
+          particles.splice(i, 1);
+          i--;
+        }
+      }
+      requestAnimationFrame(animateParticles);
     }
+    animateParticles(); // Start particle animation loop
 
-    function animate() {
-      draw();
-      requestAnimationFrame(animate);
-    }
-    animate();
+    // Adjust canvas size on window resize for responsiveness
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      // Re-initialize ambient particles on resize to prevent them going off screen
+      particles = particles.filter(p => !p.isAmbient); // Remove old ambient particles
+      for (let i = 0; i < AMBIENT_PARTICLE_COUNT; i++) {
+        particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, true));
+      }
+    });
+
+    // Glitch effect for the heading
+    const glitchTextElement = document.querySelector('.glitch');
+    const originalGlitchText = glitchTextElement.dataset.text; // Store original text
+
+    setInterval(() => {
+      let glitchedContent = '';
+      for (let i = 0; i < originalGlitchText.length; i++) {
+        if (Math.random() < 0.08) { // Optimized: Slightly lower chance to glitch a character
+          glitchedContent += String.fromCharCode(33 + Math.floor(Math.random() * 94)); // Random ASCII char
+        } else {
+          glitchedContent += originalGlitchText[i];
+        }
+      }
+      glitchTextElement.textContent = glitchedContent;
+
+      setTimeout(() => {
+        glitchTextElement.textContent = originalGlitchText; // Revert to original
+      }, 80); // Optimized: Shorter glitch duration
+    }, 2000 + Math.random() * 1500); // Optimized: Glitch every 2 to 3.5 seconds randomly
   </script>
 </body>
 </html>
