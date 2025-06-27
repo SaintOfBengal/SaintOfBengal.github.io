@@ -8,12 +8,24 @@ function extractFileId(url) {
   return null; // Return null if no file ID is found
 }
 
+// Function to show custom modal pop-up
+function showModal(title, message) {
+  const modal = document.getElementById('customModal');
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalMessage').textContent = message;
+  modal.classList.add('show');
+}
+
+// Function to hide custom modal pop-up
+function hideModal() {
+  const modal = document.getElementById('customModal');
+  modal.classList.remove('show');
+}
+
 // Function to clear all result boxes and input field
 function clearBoxes() {
-  document.getElementById('sourceLink').textContent = '#';
   document.getElementById('visitButton').href = '#';
   document.getElementById('temporaryVisitButton').href = '#';
-  document.getElementById('sourceLinkBox').classList.remove('animate-in');
   document.getElementById('resultBox').classList.remove('animate-in');
   document.getElementById('temporaryResultBox').classList.remove('animate-in');
 
@@ -33,37 +45,39 @@ function clearBoxes() {
 function copyPermanentLink() {
   var permanentLink = document.getElementById('visitButton').href;
   if (permanentLink === '#' || document.getElementById('copyButton').classList.contains('disabled')) {
-    alert('No permanent link to copy yet. Generate a link first.');
+    showModal('Copy Error', 'No permanent link to copy yet. Generate a link first.');
     return;
   }
-  navigator.clipboard.writeText(permanentLink).then(function () {
-    alert('Permanent link copied to clipboard!');
-  }, function (err) {
-    console.error('Unable to copy the permanent link: ', err);
-    alert('Failed to copy the permanent link. Please try again.');
-  });
+  const tempInput = document.createElement('input');
+  tempInput.value = permanentLink;
+  document.body.appendChild(tempInput);
+  tempInput.select();
+  document.execCommand('copy');
+  document.body.removeChild(tempInput);
+  showModal('Copied!', 'Permanent link copied to clipboard!');
 }
 
 // Function to copy the temporary link to the clipboard
 function copyTemporaryLink() {
   var temporaryLink = document.getElementById('temporaryVisitButton').href;
   if (temporaryLink === '#' || document.getElementById('temporaryCopyButton').classList.contains('disabled')) {
-    alert('No temporary link to copy yet. Generate a link first.');
+    showModal('Copy Error', 'No temporary link to copy yet. Generate a link first.');
     return;
   }
-  navigator.clipboard.writeText(temporaryLink).then(function () {
-    alert('Temporary link copied to clipboard!');
-  }, function (err) {
-    console.error('Unable to copy the temporary link: ', err);
-    alert('Failed to copy the temporary link. Please try again.');
-  });
+  const tempInput = document.createElement('input');
+  tempInput.value = temporaryLink;
+  document.body.appendChild(tempInput);
+  tempInput.select();
+  document.execCommand('copy');
+  document.body.removeChild(tempInput);
+  showModal('Copied!', 'Temporary link copied to clipboard!');
 }
 
 // Function to restore the placeholder when input loses focus
 function restorePlaceholder() {
   var input = document.getElementById('inputUrl');
   if (!input.value) {
-    input.placeholder = "Google Drive File Link";
+    input.placeholder = "ENTER GOOGLE DRIVE LINK"; // Updated placeholder
   }
 }
 
@@ -86,7 +100,7 @@ function generateLinks() {
 
 
   if (!fileId) {
-    alert('Invalid Google Drive URL. Please ensure it contains a file ID.');
+    showModal('Error 469!', 'Invalid Google Drive URL. Please Enter a Valid Public Google Drive Link.');
     generateButton.classList.remove('disabled');
     copyButton.classList.remove('disabled');
     visitButton.classList.remove('disabled');
@@ -111,10 +125,6 @@ function generateLinks() {
         temporaryLink += '&mac=' + data.mac;
       }
 
-      // Update source link
-      var sourceUrl = inputUrl;
-      document.getElementById('sourceLink').textContent = sourceUrl;
-
       // Update permanent link
       var permanentUrl = 'https://index.ys4m68pa.workers.dev/direct.aspx?id=' + fileId;
       document.getElementById('visitButton').href = permanentUrl;
@@ -123,9 +133,11 @@ function generateLinks() {
       document.getElementById('temporaryVisitButton').href = temporaryLink;
 
       // Animate result boxes
-      document.getElementById('sourceLinkBox').classList.add('animate-in');
       document.getElementById('resultBox').classList.add('animate-in');
       document.getElementById('temporaryResultBox').classList.add('animate-in');
+
+      // Show success pop-up
+      showModal('Generation Completed', 'Your download links have been successfully generated! Please copy the Link and use IDM for Best Download Speed.. 😇');
 
       // Re-enable buttons
       generateButton.classList.remove('disabled');
@@ -136,7 +148,7 @@ function generateLinks() {
     })
     .catch(function (error) {
       console.error('Error:', error);
-      alert('Failed to generate links. Please check the URL and ensure the service is available.');
+      showModal('Generation Failed', 'Failed to generate links. Please check the URL and ensure the service is available. Contact @venex on Telegram for Support');
       // Re-enable buttons on error
       generateButton.classList.remove('disabled');
       copyButton.classList.remove('disabled');
