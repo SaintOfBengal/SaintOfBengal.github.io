@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Santient Mars — Identity</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+
+  <!-- STARFIELD BACKGROUND -->
+  <div id="stars"></div>
+
+  <!-- NAV (quiet) -->
+  <nav class="nav">
+    <div class="logo">loqen</div>
+    <ul class="nav-links">
+      <li><a href="#background">Background</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <span class="label">IDENTITY</span>
+      <h1>SANTIENT MARS</h1>
+      <p>I build systems, study law, and explore how structure shapes freedom.</p>
+      <a href="#background" class="btn">Explore</a>
+    </div>
+
+    <!-- PLANET OBJECT -->
+    <div class="planet-container">
+      <img src="img/planet.png" alt="Planet" class="planet" />
+    </div>
+
+    <!-- SCROLL INDICATOR -->
+    <div class="scroll-indicator">↓</div>
+  </section>
+
+  <!-- BACKGROUND -->
+  <section id="background" class="section reveal">
+    <h2>Background</h2>
+    <p>
+      I work at the intersection of technology and law.<br />
+      Curious by nature, structured by discipline, and always building.
+    </p>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="section reveal">
+    <h2>Skills</h2>
+    <p>
+      Designing systems.<br />
+      Writing code.<br />
+      Understanding rules — and when to bend them.
+    </p>
+  </section>
+
+  <!-- IDEAS -->
+  <section class="section reveal">
+    <h2>Ideas</h2>
+    <p>
+      Complex systems fascinate me —<br />
+      software, societies, and the quiet logic behind both.
+    </p>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="section reveal">
+    <h2>Projects</h2>
+    <p>
+      Tools, platforms, and experiments —<br />
+      built to solve problems, not chase trends.
+    </p>
+  </section>
+
+  <!-- TOOLS -->
+  <section class="section reveal">
+    <h2>Tools</h2>
+    <p>
+      I prefer tools that are simple, powerful, and honest.<br />
+      The rest is just noise.
+    </p>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section reveal">
+    <h2>Signal</h2>
+    <p>
+      If something here resonates,<br />
+      you already know how to reach me.
+    </p>
+  </section>
+
+  <!-- JS -->
+  <script src="js/main.js"></script>
+  <script src="js/scroll.js"></script>
+  <script src="js/parallax.js"></script>
+</body>
+</html>
+
+/* =========================
+   base.css
+   ========================= */
+
+:root {
+  --bg-main: #070a12;
+  --bg-gradient: radial-gradient(circle at top, #0c1220 0%, #070a12 60%);
+  --text-main: #e6e9f0;
+  --text-muted: #9aa3b2;
+  --accent: #7aa2ff;
+  --max-width: 1200px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1, h2 {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+h1 {
+  font-size: clamp(2.8rem, 6vw, 5rem);
+}
+
+h2 {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  margin-bottom: 1rem;
+}
+
+p {
+  max-width: 640px;
+  color: var(--text-muted);
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+}
+
+section {
+  padding: 6rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* =========================
+   theme.css
+   ========================= */
+
+#stars {
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, #fff, transparent),
+    radial-gradient(1px 1px at 80% 40%, #fff, transparent),
+    radial-gradient(1px 1px at 50% 70%, #fff, transparent);
+  background-size: 200px 200px;
+  opacity: 0.15;
+  animation: drift 120s linear infinite;
+  z-index: -1;
+}
+
+@keyframes drift {
+  from { background-position: 0 0; }
+  to { background-position: 1000px 1000px; }
+}
+
+.nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 1.2rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.label {
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--text-muted);
+}
+
+.btn {
+  margin-top: 2rem;
+  padding: 0.6rem 1.8rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+.planet-container {
+  position: absolute;
+  bottom: -15%;
+  width: 420px;
+  max-width: 80vw;
+}
+
+.planet {
+  width: 100%;
+  opacity: 0.9;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  font-size: 1.2rem;
+  opacity: 0.6;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* =========================
+   animations.css
+   ========================= */
+
+/* Initial hidden state for reveal elements */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity 0.8s ease-out,
+    transform 0.8s ease-out;
+}
+
+/* Activated when element enters viewport */
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero text entrance */
+.hero-text {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: heroFade 1.2s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes heroFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Planet slow float (ambient motion) */
+.planet {
+  animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+  50% { opacity: 0.8; }
+}
+
