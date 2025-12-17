@@ -7,6 +7,7 @@ let index = 0;
 let isAnimating = false;
 const ANIM_TIME = 700;
 
+/* CORE */
 function updateScroll() {
   track.style.transform = `translateX(-${index * window.innerWidth}px)`;
 }
@@ -25,11 +26,11 @@ function goPrev() {
   }
 }
 
-/* BUTTON CLICKS */
-nextBtn.addEventListener("click", goNext);
-prevBtn.addEventListener("click", goPrev);
+/* BUTTONS */
+if (nextBtn) nextBtn.addEventListener("click", goNext);
+if (prevBtn) prevBtn.addEventListener("click", goPrev);
 
-/* MOUSE WHEEL = ONE PAGE */
+/* MOUSE WHEEL (DESKTOP) */
 window.addEventListener("wheel", e => {
   if (isAnimating) return;
   isAnimating = true;
@@ -40,7 +41,7 @@ window.addEventListener("wheel", e => {
   setTimeout(() => (isAnimating = false), ANIM_TIME);
 });
 
-/* KEYBOARD ARROWS = SAME BEHAVIOR */
+/* KEYBOARD */
 window.addEventListener("keydown", e => {
   if (isAnimating) return;
 
@@ -59,5 +60,29 @@ window.addEventListener("keydown", e => {
   }
 });
 
-/* RESIZE FIX */
+/* 📱 TOUCH SWIPE (MOBILE FIX) */
+let touchStartX = 0;
+let touchEndX = 0;
+
+window.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+window.addEventListener("touchend", e => {
+  if (isAnimating) return;
+
+  touchEndX = e.changedTouches[0].screenX;
+  const diff = touchStartX - touchEndX;
+
+  if (Math.abs(diff) < 50) return;
+
+  isAnimating = true;
+
+  if (diff > 0) goNext();   // swipe left
+  else goPrev();            // swipe right
+
+  setTimeout(() => (isAnimating = false), ANIM_TIME);
+});
+
+/* RESIZE */
 window.addEventListener("resize", updateScroll);
